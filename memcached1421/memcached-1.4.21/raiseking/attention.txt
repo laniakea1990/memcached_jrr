@@ -1,0 +1,2 @@
+安装libmemcached library
+use the memcached-tool.pl
