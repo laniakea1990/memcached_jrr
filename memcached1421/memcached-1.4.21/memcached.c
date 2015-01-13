@@ -5088,27 +5088,27 @@ int main (int argc, char **argv) {
           "s:"  /* unix socket path to listen on */
           "U:"  /* UDP port number to listen on */
           "m:"  /* max memory to use for items in megabytes */
-          "M"   /* return error on memory exhausted */
+          "M"   /* return error on memory exhausted，不进行LRU淘汰数据，直接返回错误，该选项即关闭LRU */
           "c:"  /* max simultaneous connections */
-          "k"   /* lock down all paged memory */
+          "k"   /* lock down all paged memory，是否锁定memcached所占用的内存 */
           "hi"  /* help, licence info */
           "r"   /* maximize core file limit */
           "v"   /* verbose */
           "d"   /* daemon mode */
           "l:"  /* interface to listen on */
-          "u:"  /* user identity to run as */
+          "u:"  /* user identity to run as，如果以root用户执行需要使用该选项，否则错误退出 */
           "P:"  /* save PID in file */
-          "f:"  /* factor? */
+          "f:"  /* factor?，内存扩容因子 */
           "n:"  /* minimum space allocated for key+value+flags */
-          "t:"  /* threads */
+          "t:"  /* threads，内部worker线程的个数，默认是4个，最大值推荐不超过64个 */
           "D:"  /* prefix delimiter? */
-          "L"   /* Large memory pages */
-          "R:"  /* max requests per event */
-          "C"   /* Disable use of CAS */
-          "b:"  /* backlog queue limit */
-          "B:"  /* Binding protocol */
+          "L"   /* Large memory pages，指定内存页的大小*/
+          "R:"  /* max requests per event，单个worker的最大请求个数 */
+          "C"   /* Disable use of CAS, 禁用 compare and set 功能*/
+          "b:"  /* backlog queue limit,listen操作缓存连接个数 */
+          "B:"  /* Binding protocol,Binding protocol - one of ascii, binary, or auto (default) */
           "I:"  /* Max item size */
-          "S"   /* Sasl ON */
+          "S"   /* Sasl ON, 打开sasl(Simple Authentication and Security Layer)安全协议 */
           "F"   /* Disable flush_all */
           "o:"  /* Extended generic options */
         ))) {
@@ -5428,7 +5428,7 @@ int main (int argc, char **argv) {
     } else if (udp_specified && !tcp_specified) {
         settings.port = settings.udpport;
     }
-
+//Core文件大小和进程打开文件个数限制的调整。
     if (maxcore != 0) {
         struct rlimit rlim_new;
         /*
@@ -5454,6 +5454,7 @@ int main (int argc, char **argv) {
             exit(EX_OSERR);
         }
     }
+
 
     /*
      * If needed, increase rlimits to allow as many connections
@@ -5495,6 +5496,7 @@ int main (int argc, char **argv) {
 
     /* daemonize if requested */
     /* if we want to ensure our ability to dump core, don't chdir to / */
+//    已daemon方式启动服务端，daemon的实现在daemon.c文件中。
     if (do_daemonize) {
         if (sigignore(SIGHUP) == -1) {
             perror("Failed to ignore SIGHUP");
@@ -5644,3 +5646,4 @@ int main (int argc, char **argv) {
 
     return retval;
 }
+
