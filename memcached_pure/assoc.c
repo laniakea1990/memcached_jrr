@@ -68,10 +68,10 @@ void assoc_init(const int hashtable_init) {
         fprintf(stderr, "Failed to init hashtable.\n");
         exit(EXIT_FAILURE);
     }
-    STATS_LOCK();//全局统计信息加锁，保证数据同步
+    STATS_LOCK();
     stats.hash_power_level = hashpower;
     stats.hash_bytes = hashsize(hashpower) * sizeof(void *);
-    STATS_UNLOCK();//解锁
+    STATS_UNLOCK();
 }
 
 item *assoc_find(const char *key, const size_t nkey, const uint32_t hv) {
